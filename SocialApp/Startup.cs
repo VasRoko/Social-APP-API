@@ -29,6 +29,8 @@ namespace SocialApp
 
             services.AddScoped<ISocialAppBusiness, SocialAppBusiness>();
             services.AddScoped<ISocialAppDataAccess, SocialAppDataAccess>();
+            services.AddScoped<IAuthRepository, AuthRepository>();
+            services.AddScoped<IUserManager, UserManager>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -40,7 +42,7 @@ namespace SocialApp
             }
             else
             {
-                // app.UseHsts();
+               // app.UseHsts();
             }
 
             // app.UseHttpsRedirection();
