@@ -1,8 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using SocialApp.Business.Interface;
 using SocialApp.DataAccess.Interfaces;
 using AutoMapper;
+using SocialApp.Domain;
 using SocialApp.Domain.Dtos;
 
 namespace SocialApp.Business
@@ -30,5 +33,18 @@ namespace SocialApp.Business
             return _mapper.Map<UserForDetailedDto>(user);
         }
 
+        public async Task<UserForUpdateDto> UpdateUser(int id, UserForUpdateDto userForUpdateDto)
+        {
+            var userFromContext = await _dataAccess.GetUser(id);
+            _mapper.Map(userForUpdateDto, userFromContext);
+
+            if (await _dataAccess.SaveAll())
+            {
+                return userForUpdateDto;
+            }
+
+            return null;
+
+        }
     }
 }

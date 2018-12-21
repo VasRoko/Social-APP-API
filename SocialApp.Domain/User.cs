@@ -20,5 +20,10 @@ namespace SocialApp.Domain
         public string City { get; set; }
         public string Country { get; set; }
         public ICollection<Photo> Photos { get; set; }
+
+        public static ReadOnlySpan<char> FindFirst(string nameIdentifier)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

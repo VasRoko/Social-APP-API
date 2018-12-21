@@ -9,5 +9,6 @@ namespace SocialApp.Business.Interface
     {
         Task<IEnumerable<UserForListDto>> GetUsers();
         Task<UserForDetailedDto> GetUser(int id);
+        Task<UserForUpdateDto> UpdateUser(int id, UserForUpdateDto userForUpdateDto);
     }
 }
