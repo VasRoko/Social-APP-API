@@ -2,7 +2,7 @@
 
 namespace SocialApp.Models
 {
-    public class UserRegisterDto
+    public class UserRegister
     {
         [Required]
         public string Username { get; set; }

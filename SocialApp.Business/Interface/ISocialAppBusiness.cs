@@ -1,11 +1,13 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using SocialApp.Domain;
+using SocialApp.Domain.Dtos;
 
 namespace SocialApp.Business.Interface
 {
     public interface ISocialAppBusiness
     {
-        List<Value> BusinessTest();
-        Value GetValue(int id);
+        Task<IEnumerable<UserForListDto>> GetUsers();
+        Task<UserForDetailedDto> GetUser(int id);
     }
 }

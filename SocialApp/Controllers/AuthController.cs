@@ -27,7 +27,7 @@ namespace SocialApp.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register(UserRegisterDto userRegisterDto)
+        public async Task<IActionResult> Register(UserRegister userRegisterDto)
         {
 
             if (await _userManager.Register(userRegisterDto.Username, userRegisterDto.Password) != null)
@@ -39,10 +39,10 @@ namespace SocialApp.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login(UserLoginDto userLoginDto)
+        public async Task<IActionResult> Login(UserLogin userLoginDto)
         {
             var applicationUser = await _userManager.Login(userLoginDto.Username.ToLower(), userLoginDto.Password);
-
+            
             if (applicationUser == null)
             {
                 return Unauthorized();

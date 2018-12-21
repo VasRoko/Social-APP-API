@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SocialApp.DataAccess;
 
 namespace SocialApp.DataAccess.Migrations
 {
     [DbContext(typeof(SocialAppDbContext))]
-    partial class SocialAppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20181221091737_Initial")]
+    partial class Initial
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -33,7 +35,7 @@ namespace SocialApp.DataAccess.Migrations
 
                     b.Property<string>("Url");
 
-                    b.Property<int>("UserId");
+                    b.Property<int?>("UserId");
 
                     b.HasKey("Id");
 
@@ -94,10 +96,9 @@ namespace SocialApp.DataAccess.Migrations
 
             modelBuilder.Entity("SocialApp.Domain.Photo", b =>
                 {
-                    b.HasOne("SocialApp.Domain.User", "User")
+                    b.HasOne("SocialApp.Domain.User")
                         .WithMany("Photos")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("UserId");
                 });
 #pragma warning restore 612, 618
         }
