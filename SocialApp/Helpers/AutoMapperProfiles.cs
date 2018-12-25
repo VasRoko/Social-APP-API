@@ -17,6 +17,8 @@ namespace SocialApp.Helpers
                 dest => dest.Age, opt => { opt.ResolveUsing(d => d.DateOfBirth.CalculateAge()); });
             CreateMap<Photo, PhotosForDetailedDto>();
             CreateMap<UserForUpdateDto, User>();
+            CreateMap<Photo, PhotoForReturnDto>();
+            CreateMap<PhotoForCreationDto, Photo>();
         }
     }
 }

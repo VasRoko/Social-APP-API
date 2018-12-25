@@ -16,6 +16,7 @@ using SocialApp.DataAccess;
 using SocialApp.Business;
 using SocialApp.DataAccess.Interfaces;
 using SocialApp.Helpers;
+using SocialApp.Domain;
 
 namespace SocialApp
 {
@@ -38,11 +39,13 @@ namespace SocialApp
                     opt.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
                 });
             services.AddCors();
+            services.Configure<CloudinarySettings>(Configuration.GetSection("CloudinarySettings"));
             services.AddAutoMapper();
             services.AddTransient<Seed>();
             services.AddScoped<ISocialAppBusiness, SocialAppBusiness>();
             services.AddScoped<ISocialAppDataAccess, SocialAppDataAccess>();
             services.AddScoped<IAuthRepository, AuthRepository>();
+            services.AddScoped<IPhotoManager, PhotoManager>();
             services.AddScoped<IUserManager, UserManager>();
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
             {
