@@ -1,6 +1,10 @@
-﻿using System.Security.Claims;
+﻿using System;
+using System.Net;
+using System.Net.Http;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SocialApp.Business;
 using SocialApp.Business.Interface;
@@ -29,7 +33,7 @@ namespace SocialApp.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddPhotoUser(int userId, PhotoForCreationDto photoForCreationDto)
+        public async Task<IActionResult> AddPhotoUser(int userId, [FromForm]PhotoForCreationDto photoForCreationDto)
         {
             if (userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
             {
@@ -46,6 +50,52 @@ namespace SocialApp.Controllers
             return BadRequest("Could not add the photo");
         }
 
-      
+        [HttpPost("{id}/setMain")]
+        public async Task<IActionResult> SetMainPhoto(int userId, int id)
+        {
+            if (userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+            {
+                return Unauthorized();
+            }
+
+            string res = await _photoManager.SetMainPhoto(userId, id);
+
+            if (res == null)
+            {
+                return BadRequest("Could not set photo to main");
+            }
+
+            if (res == "This is already the main photo")
+            {
+                return BadRequest(res);
+            }
+
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeletePhoto(int userId, int id)
+        {
+            if (userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+            {
+                return Unauthorized();
+            }
+
+            string res = await _photoManager.DeletePhoto(userId, id);
+
+            if (res == "You cannot delete your main photo")
+            {
+                return BadRequest(res);
+            }
+
+            if (res != null)
+            {
+                return Ok();
+            }
+
+            return BadRequest("Failed to delete Photo");
+        }
+
+
     }
 }

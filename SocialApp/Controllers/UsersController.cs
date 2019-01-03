@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using SocialApp.Business.Helpers;
 using SocialApp.Business.Interface;
 using SocialApp.Domain.Dtos;
 
@@ -14,6 +15,7 @@ namespace SocialApp.Controllers
     [Authorize]
     [Route("api/[controller]")]
     [ApiController]
+    [ServiceFilter(typeof(LogUserActivity))]
     public class UsersController : ControllerBase
     {
         private readonly ISocialAppBusiness _dataBusiness;
@@ -29,7 +31,7 @@ namespace SocialApp.Controllers
             return Ok(await _dataBusiness.GetUsers());
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id}", Name = "GetUser")]
         public async Task<IActionResult> GetUser(int id)
         {
             return Ok(await _dataBusiness.GetUser(id));

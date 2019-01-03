@@ -8,5 +8,8 @@ namespace SocialApp.Business.Interface
     {
         Task<PhotoForReturnDto> AddPhotoUser(int userId, PhotoForCreationDto photoForCreationDto);
         Task<PhotoForReturnDto> GetPhoto(int id);
+        Task<string> SetMainPhoto(int id, int photoId);
+        Task<string> DeletePhoto(int userId, int id);
+
     }
 }

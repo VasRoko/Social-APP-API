@@ -17,6 +17,7 @@ using SocialApp.Business;
 using SocialApp.DataAccess.Interfaces;
 using SocialApp.Helpers;
 using SocialApp.Domain;
+using SocialApp.Business.Helpers;
 
 namespace SocialApp
 {
@@ -40,6 +41,7 @@ namespace SocialApp
                 });
             services.AddCors();
             services.Configure<CloudinarySettings>(Configuration.GetSection("CloudinarySettings"));
+
             services.AddAutoMapper();
             services.AddTransient<Seed>();
             services.AddScoped<ISocialAppBusiness, SocialAppBusiness>();
@@ -47,6 +49,8 @@ namespace SocialApp
             services.AddScoped<IAuthRepository, AuthRepository>();
             services.AddScoped<IPhotoManager, PhotoManager>();
             services.AddScoped<IUserManager, UserManager>();
+            services.AddScoped<LogUserActivity>();
+
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
             {
                 options.TokenValidationParameters = new TokenValidationParameters

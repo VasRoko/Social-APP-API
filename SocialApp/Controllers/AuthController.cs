@@ -4,10 +4,12 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using SocialApp.Business;
+using SocialApp.Domain.Dtos;
 using SocialApp.Models;
 
 
@@ -19,38 +21,39 @@ namespace SocialApp.Controllers
     {
         private readonly IUserManager _userManager;
         private readonly IConfiguration _config;
+        private readonly IMapper _mapper;
 
-        public AuthController(IUserManager userManager, IConfiguration config)
+        public AuthController(IUserManager userManager, IConfiguration config, IMapper mapper)
         {
             _userManager = userManager;
             _config = config;
+            _mapper = mapper;
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register(UserRegister userRegisterDto)
+        public async Task<IActionResult> Register(UserRegister userRegister)
         {
+            var createdUser = await _userManager.Register(_mapper.Map<UserForRegisterDto>(userRegister), userRegister.Password);
 
-            if (await _userManager.Register(userRegisterDto.Username, userRegisterDto.Password) != null)
+            if (createdUser == null)
             {
-                return StatusCode(201);
+                return BadRequest("Username already exist!");
             }
 
-            return BadRequest("Username already exist!");
+            return CreatedAtRoute("GetUser", new { controller = "Users", id = createdUser.Id }, createdUser);
         }
 
         [HttpPost("login")]
         public async Task<IActionResult> Login(UserLogin userLoginDto)
         {
-            var applicationUser = await _userManager.Login(userLoginDto.Username.ToLower(), userLoginDto.Password);
-            
-            if (applicationUser == null)
+            var user = await _userManager.Login(userLoginDto.Username.ToLower(), userLoginDto.Password);
+
+            if (user == null)
             {
                 return Unauthorized();
             }
 
-            return Ok(new {
-                token = _userManager.TokenIssuer(applicationUser)
-            });
+            return Ok(user);
         }
 
     }

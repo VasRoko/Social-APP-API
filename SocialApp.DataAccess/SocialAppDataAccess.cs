@@ -44,5 +44,10 @@ namespace SocialApp.DataAccess
         {
             return await _context.Photos.FirstOrDefaultAsync(p => p.Id == id);
         }
+
+        public async Task<Photo> GetMainPhoto(int userId)
+        {
+            return await _context.Photos.Where(u => u.UserId == userId).FirstOrDefaultAsync(p => p.IsMain);
+        }
     }
 }

@@ -6,6 +6,7 @@ using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
 using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Options;
+using Remotion.Linq.Parsing.Structure.IntermediateModel;
 using SocialApp.Business.Interface;
 using SocialApp.DataAccess.Interfaces;
 using SocialApp.Domain;
@@ -80,6 +81,73 @@ namespace SocialApp.Business
         {
             var photo = await _dataContext.GetPhoto(id);
             return _mapper.Map<PhotoForReturnDto>(photo);
+        }
+
+        public async Task<string> SetMainPhoto(int userId, int photoId)
+        {
+            var user = await _dataContext.GetUser(userId);
+
+            if(!user.Photos.Any(p => p.Id == photoId))
+            {
+                return null;
+            }
+
+            var photoFromDb = await _dataContext.GetPhoto(photoId);
+
+            if (photoFromDb.IsMain)
+            {
+                return "This is already the main photo";
+            }
+
+            var currentMainPhoto = await _dataContext.GetMainPhoto(userId);
+            currentMainPhoto.IsMain = false;
+            photoFromDb.IsMain = true;
+
+            if (await _dataContext.SaveAll())
+            {
+                return "ok";
+            }
+
+            return null;
+        }
+
+        public async Task<string> DeletePhoto(int usedId, int id)
+        {
+            var user = await _dataContext.GetUser(usedId);
+            var photo = await _dataContext.GetPhoto(id);
+
+            if (!user.Photos.Any(p => p.Id == id))
+            {
+                return null;
+            }
+
+            if (photo.IsMain)
+            {
+                return "You cannot delete your main photo";
+            }
+
+            if (photo.PublicId != null)
+            {
+                var deleteParams = new DeletionParams(photo.PublicId);
+                var result = _cloudinary.Destroy(deleteParams);
+
+                if (result.Result == "ok")
+                {
+                    _dataContext.Delete(photo);
+                }
+            }
+
+            if (photo.PublicId == null)
+            {
+                _dataContext.Delete(photo);
+            }
+            
+            if (await _dataContext.SaveAll())
+            {
+                return "ok";
+            }
+
+            return null;
         }
     }
 }
