@@ -8,7 +8,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SocialApp.Business.Helpers;
 using SocialApp.Business.Interface;
+using SocialApp.Domain;
 using SocialApp.Domain.Dtos;
+using SocialApp.Helpers;
 
 namespace SocialApp.Controllers
 {
@@ -26,9 +28,14 @@ namespace SocialApp.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetUsers()
+        public async Task<IActionResult> GetUsers([FromQuery]UserParams userParams)
         {
-            return Ok(await _dataBusiness.GetUsers());
+            var users = await _dataBusiness.GetUsers(userParams);
+            var usersToReturn = _dataBusiness.Users(users);
+
+            Response.AddPagination(users.CurrentPage, users.PageSize, users.TotalCount, users.TotalPages);
+
+            return Ok(usersToReturn);
         }
 
         [HttpGet("{id}", Name = "GetUser")]

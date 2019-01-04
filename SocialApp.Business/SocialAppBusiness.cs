@@ -21,16 +21,20 @@ namespace SocialApp.Business
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<UserForListDto>> GetUsers()
+        public async Task<PageList<User>> GetUsers(UserParams userParams)
         {
-            var users = await _dataAccess.GetUsers();
-            return _mapper.Map<IEnumerable<UserForListDto>>(users);
+            return await _dataAccess.GetUsers(userParams);
         }
 
         public async Task<UserForDetailedDto> GetUser(int id)
         {
             var user = await _dataAccess.GetUser(id);
             return _mapper.Map<UserForDetailedDto>(user);
+        }
+
+        public IEnumerable<UserForListDto> Users(PageList<User> users)
+        {
+            return _mapper.Map<IEnumerable<UserForListDto>>(users);
         }
 
         public async Task<UserForUpdateDto> UpdateUser(int id, UserForUpdateDto userForUpdateDto)
@@ -44,7 +48,7 @@ namespace SocialApp.Business
             }
 
             return null;
-
         }
+
     }
 }
