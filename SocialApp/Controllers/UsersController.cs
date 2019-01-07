@@ -30,7 +30,7 @@ namespace SocialApp.Controllers
         [HttpGet]
         public async Task<IActionResult> GetUsers([FromQuery]UserParams userParams)
         {
-            var users = await _dataBusiness.GetUsers(userParams);
+            var users = await _dataBusiness.GetUsers(userParams, int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value));
             var usersToReturn = _dataBusiness.Users(users);
 
             Response.AddPagination(users.CurrentPage, users.PageSize, users.TotalCount, users.TotalPages);

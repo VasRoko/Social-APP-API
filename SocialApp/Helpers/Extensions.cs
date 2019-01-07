@@ -21,7 +21,7 @@ namespace SocialApp.Helpers
             var textFormater = new JsonSerializerSettings();
             textFormater.ContractResolver = new CamelCasePropertyNamesContractResolver();
             response.Headers.Add("Pagination", JsonConvert.SerializeObject(paginationHeader, textFormater));
-            response.Headers.Add("Access-Control-Expose-Headers", "Application-Error");
+            response.Headers.Add("Access-Control-Expose-Headers", "Pagination");
         }
 
         public static int CalculateAge(this DateTime dataTime)

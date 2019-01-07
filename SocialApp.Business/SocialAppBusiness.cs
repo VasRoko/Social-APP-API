@@ -21,8 +21,16 @@ namespace SocialApp.Business
             _mapper = mapper;
         }
 
-        public async Task<PageList<User>> GetUsers(UserParams userParams)
+        public async Task<PageList<User>> GetUsers(UserParams userParams, int userId)
         {
+            var currentUser = await _dataAccess.GetUser(userId);
+            userParams.UserId = currentUser.Id;
+
+            if (string.IsNullOrEmpty(userParams.Gender))
+            {
+                userParams.Gender = currentUser.Gender == "male" ? "female" : "male";
+            }
+            
             return await _dataAccess.GetUsers(userParams);
         }
 
