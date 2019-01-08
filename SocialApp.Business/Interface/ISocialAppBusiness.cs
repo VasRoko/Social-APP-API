@@ -12,5 +12,6 @@ namespace SocialApp.Business.Interface
         Task<PageList<User>> GetUsers(UserParams userParams, int userId);
         Task<UserForDetailedDto> GetUser(int id);
         Task<UserForUpdateDto> UpdateUser(int id, UserForUpdateDto userForUpdateDto);
+        Task<string> Like(int userId, int recipientId);
     }
 }

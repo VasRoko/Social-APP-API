@@ -60,5 +60,28 @@ namespace SocialApp.Controllers
             return NoContent();
 
         }
+
+        [HttpPost("{id}/like/{recipientId}")]
+        public async Task<IActionResult> LikeUser(int id, int recipientId)
+        {
+            if (id != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+            {
+                return Unauthorized();
+            }
+
+            string response = await _dataBusiness.Like(id, recipientId);
+
+            if (response == null)
+            {
+                return NotFound();
+            }
+
+            if (response == "Ok")
+            {
+                return Ok();
+            }
+
+            return BadRequest(response);
+        }
     }
 }

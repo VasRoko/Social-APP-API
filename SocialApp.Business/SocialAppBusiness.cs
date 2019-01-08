@@ -58,5 +58,34 @@ namespace SocialApp.Business
             return null;
         }
 
+        public async Task<string> Like(int userId, int recipientId)
+        {
+            var like = await _dataAccess.GetLike(userId, recipientId);
+
+            if (like != null)
+            {
+                return "You already like this user";
+            }
+
+            if (await _dataAccess.GetUser(recipientId) == null)
+            {
+                return null;
+            }
+
+            like = new Like
+            {
+                LikerId = userId,
+                LikeeId = recipientId
+            };
+
+            _dataAccess.Add<Like>(like);
+
+            if (await _dataAccess.SaveAll())
+            {
+                return "Ok";
+            }
+
+            return "Failed to Like User";
+        }
     }
 }
