@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Security.Claims;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using SocialApp.Business.Interface;
 using SocialApp.DataAccess.Interfaces;
@@ -25,7 +23,7 @@ namespace SocialApp.Business
         {
             var currentUser = await _dataAccess.GetUser(userId);
             userParams.UserId = currentUser.Id;
-
+            var users = await _dataAccess.GetUsers(userParams);
             if (string.IsNullOrEmpty(userParams.Gender))
             {
                 userParams.Gender = currentUser.Gender == "male" ? "female" : "male";
@@ -34,15 +32,35 @@ namespace SocialApp.Business
             return await _dataAccess.GetUsers(userParams);
         }
 
-        public async Task<UserForDetailedDto> GetUser(int id)
+        public IEnumerable<UserForListDto> MapUsers(int userid, PageList<User> pagination)
         {
-            var user = await _dataAccess.GetUser(id);
-            return _mapper.Map<UserForDetailedDto>(user);
+            var users = _mapper.Map<IEnumerable<UserForListDto>>(pagination);
+            Task<IEnumerable<UserForListDto>> returnUsers = Task.Run<IEnumerable<UserForListDto>>(async () => await SetIsLikedAsync(userid, users));
+            return returnUsers.Result;
         }
 
-        public IEnumerable<UserForListDto> Users(PageList<User> users)
+        private async Task<IEnumerable<UserForListDto>> SetIsLikedAsync(int userid, IEnumerable<UserForListDto> users)
         {
-            return _mapper.Map<IEnumerable<UserForListDto>>(users);
+            foreach (var user in users)
+            {
+                if (await _dataAccess.GetLike(userid, user.Id) != null)
+                {
+                    user.IsLiked = true;
+                }
+            }
+
+            return users;
+        }
+
+        public async Task<UserForDetailedDto> GetUser(int currentUserid, int id)
+        {
+            var user = await _dataAccess.GetUser(id);
+            var userToReturn = _mapper.Map<UserForDetailedDto>(user);
+            if(await _dataAccess.GetLike(currentUserid, user.Id) != null)
+            {
+                userToReturn.IsLiked = true;
+            }
+            return userToReturn;
         }
 
         public async Task<UserForUpdateDto> UpdateUser(int id, UserForUpdateDto userForUpdateDto)
@@ -64,7 +82,11 @@ namespace SocialApp.Business
 
             if (like != null)
             {
-                return "You already like this user";
+                _dataAccess.Delete(like);
+                if (await _dataAccess.SaveAll())
+                {
+                    return "Ok";
+                }
             }
 
             if (await _dataAccess.GetUser(recipientId) == null)

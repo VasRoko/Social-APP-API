@@ -8,9 +8,9 @@ namespace SocialApp.Business.Interface
 {
     public interface ISocialAppBusiness
     {
-        IEnumerable<UserForListDto> Users(PageList<User> users);
+        IEnumerable<UserForListDto> MapUsers(int userid, PageList<User> users);
         Task<PageList<User>> GetUsers(UserParams userParams, int userId);
-        Task<UserForDetailedDto> GetUser(int id);
+        Task<UserForDetailedDto> GetUser(int currentUserid, int id);
         Task<UserForUpdateDto> UpdateUser(int id, UserForUpdateDto userForUpdateDto);
         Task<string> Like(int userId, int recipientId);
     }

@@ -31,7 +31,7 @@ namespace SocialApp.Controllers
         public async Task<IActionResult> GetUsers([FromQuery]UserParams userParams)
         {
             var users = await _dataBusiness.GetUsers(userParams, int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value));
-            var usersToReturn = _dataBusiness.Users(users);
+            var usersToReturn = _dataBusiness.MapUsers(int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value), users);
 
             Response.AddPagination(users.CurrentPage, users.PageSize, users.TotalCount, users.TotalPages);
 
@@ -41,7 +41,7 @@ namespace SocialApp.Controllers
         [HttpGet("{id}", Name = "GetUser")]
         public async Task<IActionResult> GetUser(int id)
         {
-            return Ok(await _dataBusiness.GetUser(id));
+            return Ok(await _dataBusiness.GetUser(int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value), id));
         }
 
         [HttpPut("{id}")]

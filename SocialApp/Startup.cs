@@ -49,6 +49,7 @@ namespace SocialApp
             services.AddScoped<IAuthRepository, AuthRepository>();
             services.AddScoped<IPhotoManager, PhotoManager>();
             services.AddScoped<IUserManager, UserManager>();
+            services.AddScoped<IMessageManager, MessageManager>();
             services.AddScoped<LogUserActivity>();
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
