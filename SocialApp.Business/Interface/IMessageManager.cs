@@ -13,6 +13,7 @@ namespace SocialApp.Business.Interface
         Task<PageList<Message>> GetMessageForUser(int userId, MessageParams messageParams);
         IEnumerable<MessageForReturnDto> MapMessagesForUser(PageList<Message> messages);
         Task<IEnumerable<MessageForReturnDto>> GetMessageThred(int userId, int recipientId);
+        Task<string> MerkMessageAsRead(int userid, int id);
         Task<string> DeleteMessage(int id, int userid);
     }
 }

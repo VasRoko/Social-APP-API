@@ -98,5 +98,24 @@ namespace SocialApp.Business
             throw new Exception("Error deleting  the message");
 
         }
+
+        public async Task<string> MerkMessageAsRead(int userid, int id)
+        {
+            var message = _dataAccess.GetMessage(id);
+            if (message.Result.RecipientId != userid)
+            {
+                return null;
+            }
+
+            message.Result.IsRead = true;
+            message.Result.DateRead = DateTime.Now;
+
+            if (await _dataAccess.SaveAll())
+            {
+                return "Ok";
+            }
+
+            throw new Exception("Error reading the message");
+        }
     }
 }

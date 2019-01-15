@@ -106,5 +106,22 @@ namespace SocialApp.Controllers
             return BadRequest("Could not delete your message");
         }
 
+        [HttpPost("{id}/read")]
+        public async Task<IActionResult> MarkMessageAsRead(int userid, int id)
+        {
+            if (userid != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+            {
+                return Unauthorized();
+            }
+
+            if (await _messageManager.MerkMessageAsRead(userid, id) != null)
+            {
+                return NoContent();
+            }
+
+            return Unauthorized();
+
+        }
+
     }
 }

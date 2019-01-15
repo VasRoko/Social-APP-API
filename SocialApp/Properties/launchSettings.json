@@ -20,7 +20,7 @@
     "SocialApp": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "api/values",
+      "launchUrl": "",
       "applicationUrl": "https://localhost:5001;",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
