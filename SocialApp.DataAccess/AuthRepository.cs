@@ -22,8 +22,8 @@ namespace SocialApp.DataAccess
             byte[] passwordHash, passwordSalt;
             CreatePasswordHash(password, out passwordHash, out passwordSalt);
 
-            user.PasswordHash = passwordHash;
-            user.PasswordSalt = passwordSalt;
+            // user.PasswordHash = passwordHash;
+            // user.PasswordSalt = passwordSalt;
 
             await _dataContext.Users.AddAsync(user);
             await _dataContext.SaveChangesAsync();
@@ -42,17 +42,17 @@ namespace SocialApp.DataAccess
 
         public async Task<User> Login(string username, string password)
         {
-            var user = await _dataContext.Users.Include(p => p.Photos).FirstOrDefaultAsync(x => x.Username == username);
+            var user = await _dataContext.Users.Include(p => p.Photos).FirstOrDefaultAsync(x => x.UserName == username);
 
             if (user == null)
             {
                return null;
             }
 
-            if (!VerifyPassword(password, user.PasswordHash, user.PasswordSalt))
-            {
-                return null;
-            }
+           // if (!VerifyPassword(password, user.PasswordHash, user.PasswordSalt))
+           // {
+               //  return null;
+           // }
 
             return user;
         }
@@ -73,7 +73,7 @@ namespace SocialApp.DataAccess
 
         public async Task<bool> UserExists(string username)
         {
-            if (await _dataContext.Users.AnyAsync(x => x.Username == username))
+            if (await _dataContext.Users.AnyAsync(x => x.UserName == username))
             {
                 return true;
             }
