@@ -13,7 +13,6 @@ namespace SocialApp.Controllers
     [ServiceFilter(typeof(LogUserActivity))]
     [Route("api/users/{userId}/[controller]")]
     [ApiController]
-    [Authorize]
     public class MessagesController : ControllerBase
     {
         private readonly ISocialAppBusiness _businessRepo;

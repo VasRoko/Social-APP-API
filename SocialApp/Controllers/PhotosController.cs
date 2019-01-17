@@ -1,10 +1,5 @@
-﻿using System;
-using System.Net;
-using System.Net.Http;
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SocialApp.Business;
 using SocialApp.Business.Interface;
@@ -12,7 +7,6 @@ using SocialApp.Domain.Dtos;
 
 namespace SocialApp.Controllers
 {
-    [Authorize]
     [Route("api/users/{userId}/photos")]
     [ApiController]
     public class PhotosController : ControllerBase

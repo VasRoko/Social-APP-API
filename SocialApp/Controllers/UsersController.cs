@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SocialApp.Business.Helpers;
 using SocialApp.Business.Interface;
@@ -14,7 +10,6 @@ using SocialApp.Helpers;
 
 namespace SocialApp.Controllers
 {
-    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     [ServiceFilter(typeof(LogUserActivity))]

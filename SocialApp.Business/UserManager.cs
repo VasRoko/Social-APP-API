@@ -4,6 +4,8 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using SocialApp.DataAccess.Interfaces;
@@ -14,39 +16,54 @@ namespace SocialApp.Business
 {
     public class UserManager : IUserManager
     {
-        private readonly IAuthRepository _authRepository;
         private readonly IConfiguration _config;
         private readonly IMapper _mapper;
 
-        public UserManager(IAuthRepository authRepository, IConfiguration config, IMapper mapper)
+        private readonly UserManager<User> _userIdentityManager;
+        private readonly SignInManager<User> _signInManager;
+
+        public UserManager(
+            IConfiguration config,
+            IMapper mapper,
+            UserManager<User> userIdentityManager,
+            SignInManager<User> signInManager
+            )
         {
-            _authRepository = authRepository;
             _config = config;
             _mapper = mapper;
+            _userIdentityManager = userIdentityManager;
+            _signInManager = signInManager;
         }
 
         public async Task<UserForDetailedDto> Register(UserForRegisterDto userRegister, string password)
         {
-            userRegister.Username = userRegister.Username.ToLower();
-
-            if (await _authRepository.UserExists(userRegister.Username))
-            {
-                return null;
-            }
-            // Map userForRegister to User class
             var newUser = _mapper.Map<User>(userRegister);
+            var result = await _userIdentityManager.CreateAsync(newUser, userRegister.Password);
 
-            // Create User
-            var createdUser = await _authRepository.Register(newUser, userRegister.Password);
+            if (result.Succeeded)
+            {
+                // Return user for userForList
+                return _mapper.Map<UserForDetailedDto>(newUser);
+            }
 
-            // Return user for userForList
-            return _mapper.Map<UserForDetailedDto>(createdUser);
+            return null;
         }
 
         public async Task<object> Login(string username, string password)
         {
-            var user = await _authRepository.Login(username, password);
-            return this.TokenIssuer(_mapper.Map<UserForDetailedDto>(user));
+            var user = await _userIdentityManager.FindByNameAsync(username);
+            var result = await _signInManager.CheckPasswordSignInAsync(user, password, false);
+
+            if (result.Succeeded)
+            {
+                var appUser = await _userIdentityManager.Users.Include(p => p.Photos)
+                    .FirstOrDefaultAsync(u => u.NormalizedUserName == username.ToUpper());
+
+                return this.TokenIssuer(_mapper.Map<UserForDetailedDto>(appUser));
+            }
+
+            return null;
+
         }
 
         public object TokenIssuer(UserForDetailedDto user)

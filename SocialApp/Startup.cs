@@ -2,11 +2,14 @@
 using System.Net;
 using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
@@ -36,42 +39,31 @@ namespace SocialApp
         {
             services.AddDbContext<SocialAppDbContext>(x => x.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"))
                 .ConfigureWarnings(warnings => warnings.Ignore(CoreEventId.IncludeIgnoredWarning)));
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
-                .AddJsonOptions(opt =>
-                {
-                    opt.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
-                });
-            services.AddCors();
-            services.Configure<CloudinarySettings>(Configuration.GetSection("CloudinarySettings"));
 
-            services.AddAutoMapper();
-            services.AddTransient<Seed>();
-            services.AddScoped<ISocialAppBusiness, SocialAppBusiness>();
-            services.AddScoped<ISocialAppDataAccess, SocialAppDataAccess>();
-            services.AddScoped<IAuthRepository, AuthRepository>();
-            services.AddScoped<IPhotoManager, PhotoManager>();
-            services.AddScoped<IUserManager, UserManager>();
-            services.AddScoped<IMessageManager, MessageManager>();
-            services.AddScoped<LogUserActivity>();
-
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+            IdentityBuilder builder = services.AddIdentityCore<User>(opt =>
             {
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey =
-                        new SymmetricSecurityKey(
-                            Encoding.ASCII.GetBytes(Configuration.GetSection("AppSettings:Token").Value)),
-                    ValidateIssuer = false,
-                    ValidateAudience = false
-                };
+                // For development only! 
+                opt.Password.RequireDigit = false;
+                opt.Password.RequiredLength = 4;
+                opt.Password.RequireNonAlphanumeric = false;
+                opt.Password.RequireUppercase = false;
+            
             });
-        }
 
-        public void ConfigureDevelopmentServices(IServiceCollection services)
-        {
-            services.AddDbContext<SocialAppDbContext>(x => x.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
+            builder = new IdentityBuilder(builder.UserType, typeof(Role), builder.Services);
+            builder.AddEntityFrameworkStores<SocialAppDbContext>();
+            builder.AddRoleValidator<RoleValidator<Role>>();
+            builder.AddRoleManager<RoleManager<Role>>();
+            builder.AddSignInManager<SignInManager<User>>();
+
+            services.AddMvc(options =>
+                {
+                    var policy = new AuthorizationPolicyBuilder()
+                        .RequireAuthenticatedUser()
+                        .Build();
+                    options.Filters.Add(new AuthorizeFilter(policy));
+
+                }).SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
                 .AddJsonOptions(opt =>
                 {
                     opt.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
@@ -80,10 +72,9 @@ namespace SocialApp
             services.Configure<CloudinarySettings>(Configuration.GetSection("CloudinarySettings"));
 
             services.AddAutoMapper();
-            services.AddTransient<Seed>();
+            // services.AddTransient<Seed>();
             services.AddScoped<ISocialAppBusiness, SocialAppBusiness>();
             services.AddScoped<ISocialAppDataAccess, SocialAppDataAccess>();
-            services.AddScoped<IAuthRepository, AuthRepository>();
             services.AddScoped<IPhotoManager, PhotoManager>();
             services.AddScoped<IUserManager, UserManager>();
             services.AddScoped<IMessageManager, MessageManager>();
@@ -104,7 +95,7 @@ namespace SocialApp
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, Seed seeder)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             if (env.IsDevelopment())
             {
