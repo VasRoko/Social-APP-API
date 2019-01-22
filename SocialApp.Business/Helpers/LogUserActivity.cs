@@ -13,7 +13,7 @@ namespace SocialApp.Business.Helpers
         {
             var resultContext = await next();
             var userId = int.Parse(resultContext.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
-            var dbContext = resultContext.HttpContext.RequestServices.GetService<ISocialAppDataAccess>();
+            var dbContext = resultContext.HttpContext.RequestServices.GetService<IAppDataAccess>();
 
             var user = await dbContext.GetUser(userId);
             user.LastActive = DateTime.Now;

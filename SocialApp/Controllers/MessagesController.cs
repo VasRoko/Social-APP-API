@@ -15,10 +15,10 @@ namespace SocialApp.Controllers
     [ApiController]
     public class MessagesController : ControllerBase
     {
-        private readonly ISocialAppBusiness _businessRepo;
+        private readonly IAppBusiness _businessRepo;
         private readonly IMessageManager _messageManager;
 
-        public MessagesController(ISocialAppBusiness businessRepo, IMessageManager messageManager)
+        public MessagesController(IAppBusiness businessRepo, IMessageManager messageManager)
         {
             _businessRepo = businessRepo;
             _messageManager = messageManager;

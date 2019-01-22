@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -8,13 +9,13 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using SocialApp.DataAccess.Interfaces;
+using SocialApp.Business.Interface;
 using SocialApp.Domain;
 using SocialApp.Domain.Dtos;
 
 namespace SocialApp.Business
 {
-    public class UserManager : IUserManager
+    public class AuthManager : IAuthManager
     {
         private readonly IConfiguration _config;
         private readonly IMapper _mapper;
@@ -22,7 +23,7 @@ namespace SocialApp.Business
         private readonly UserManager<User> _userIdentityManager;
         private readonly SignInManager<User> _signInManager;
 
-        public UserManager(
+        public AuthManager(
             IConfiguration config,
             IMapper mapper,
             UserManager<User> userIdentityManager,
@@ -51,30 +52,41 @@ namespace SocialApp.Business
 
         public async Task<object> Login(string username, string password)
         {
+            SignInResult result = new SignInResult();
             var user = await _userIdentityManager.FindByNameAsync(username);
-            var result = await _signInManager.CheckPasswordSignInAsync(user, password, false);
+            if (user != null)
+            {
+                result = await _signInManager.CheckPasswordSignInAsync(user, password, false);
+            }
 
             if (result.Succeeded)
             {
                 var appUser = await _userIdentityManager.Users.Include(p => p.Photos)
                     .FirstOrDefaultAsync(u => u.NormalizedUserName == username.ToUpper());
+                var userToken = await this.TokenIssuer(_mapper.Map<User>(appUser));
 
-                return this.TokenIssuer(_mapper.Map<UserForDetailedDto>(appUser));
+                return userToken;
             }
 
             return null;
 
         }
 
-        public object TokenIssuer(UserForDetailedDto user)
+        public async Task<object> TokenIssuer(User _user)
         {
-            if (user != null)
+            if (_user != null)
             {
-                var claims = new[]
+                var claims = new List<Claim>
                 {
-                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                    new Claim(ClaimTypes.Name, user.Username)
+                    new Claim(ClaimTypes.NameIdentifier, _user.Id.ToString()),
+                    new Claim(ClaimTypes.Name, _user.UserName)
                 };
+
+                var roles = await _userIdentityManager.GetRolesAsync(_user);
+                foreach (var role in roles)
+                {
+                    claims.Add(new Claim(ClaimTypes.Role, role));
+                }
 
                 var key = new SymmetricSecurityKey(
                     Encoding.UTF8.GetBytes(_config.GetSection("AppSettings:Token").Value));
@@ -90,7 +102,7 @@ namespace SocialApp.Business
 
                 var tokenHandler = new JwtSecurityTokenHandler();
                 var token = tokenHandler.CreateToken(tokenDescriptor);
-
+                var user = _mapper.Map<UserForDetailedDto>(_user);
 
                 return new
                 {

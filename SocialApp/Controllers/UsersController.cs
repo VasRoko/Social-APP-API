@@ -15,9 +15,9 @@ namespace SocialApp.Controllers
     [ServiceFilter(typeof(LogUserActivity))]
     public class UsersController : ControllerBase
     {
-        private readonly ISocialAppBusiness _dataBusiness;
+        private readonly IAppBusiness _dataBusiness;
 
-        public UsersController(ISocialAppBusiness dataBusiness)
+        public UsersController(IAppBusiness dataBusiness)
         {
             _dataBusiness = dataBusiness;
         }

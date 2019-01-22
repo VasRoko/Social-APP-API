@@ -8,11 +8,11 @@ using SocialApp.Domain;
 
 namespace SocialApp.DataAccess
 {
-    public class SocialAppDataAccess : ISocialAppDataAccess
+    public class AppDataAccess : IAppDataAccess
     {
-        private readonly SocialAppDbContext _context;
+        private readonly AppDbContext _context;
 
-        public SocialAppDataAccess(SocialAppDbContext context)
+        public AppDataAccess(AppDbContext context)
         {
             _context = context;
         }

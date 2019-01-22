@@ -8,8 +8,8 @@ using SocialApp.DataAccess;
 
 namespace SocialApp.DataAccess.Migrations
 {
-    [DbContext(typeof(SocialAppDbContext))]
-    partial class SocialAppDbContextModelSnapshot : ModelSnapshot
+    [DbContext(typeof(AppDbContext))]
+    partial class AppDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
@@ -261,9 +261,7 @@ namespace SocialApp.DataAccess.Migrations
 
                     b.Property<int>("RoleId");
 
-                    b.HasKey("UserId");
-
-                    b.HasAlternateKey("UserId", "RoleId");
+                    b.HasKey("UserId", "RoleId");
 
                     b.HasIndex("RoleId");
 

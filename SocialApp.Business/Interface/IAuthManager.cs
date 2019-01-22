@@ -2,12 +2,12 @@
 using SocialApp.Domain.Dtos;
 using System.Threading.Tasks;
 
-namespace SocialApp.Business
+namespace SocialApp.Business.Interface
 {
-    public interface IUserManager
+    public interface IAuthManager
     {
         Task<UserForDetailedDto> Register(UserForRegisterDto userForRegister, string password);
         Task<object> Login(string username, string password);
-        object TokenIssuer(UserForDetailedDto currentUser);
+        Task<object> TokenIssuer(User currentUser);
     }
 }

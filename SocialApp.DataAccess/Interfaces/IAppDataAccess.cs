@@ -4,7 +4,7 @@ using SocialApp.Domain;
 
 namespace SocialApp.DataAccess.Interfaces
 {
-    public interface ISocialAppDataAccess
+    public interface IAppDataAccess
     {
         void Add<T>(T entity) where T : class;
         void Delete<T>(T entity) where T : class;

@@ -16,12 +16,12 @@ namespace SocialApp.Business
 {
     public class PhotoManager : IPhotoManager
     {
-        private readonly ISocialAppDataAccess _dataContext;
+        private readonly IAppDataAccess _dataContext;
         private readonly IOptions<CloudinarySettings> _cloudinaryConfig;
         private readonly IMapper _mapper;
         private Cloudinary _cloudinary;
 
-        public PhotoManager(ISocialAppDataAccess dataContext, IOptions<CloudinarySettings> cloudinaryConfig, IMapper mapper)
+        public PhotoManager(IAppDataAccess dataContext, IOptions<CloudinarySettings> cloudinaryConfig, IMapper mapper)
         {
             _dataContext = dataContext;
             _cloudinaryConfig = cloudinaryConfig;

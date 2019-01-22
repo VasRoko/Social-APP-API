@@ -11,10 +11,10 @@ namespace SocialApp.Controllers
     [ApiController]
     public class PhotosController : ControllerBase
     {
-        private readonly IUserManager _userManager;
+        private readonly IAuthManager _userManager;
         private readonly IPhotoManager _photoManager;
 
-        public PhotosController(IUserManager userManager, IPhotoManager photoManager)
+        public PhotosController(IAuthManager userManager, IPhotoManager photoManager)
         {
             _userManager = userManager;
             _photoManager = photoManager;

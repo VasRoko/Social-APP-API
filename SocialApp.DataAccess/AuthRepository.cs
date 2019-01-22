@@ -10,9 +10,9 @@ namespace SocialApp.DataAccess
 {
     public class AuthRepository : IAuthRepository
     {
-        private readonly SocialAppDbContext _dataContext;
+        private readonly AppDbContext _dataContext;
 
-        public AuthRepository(SocialAppDbContext dataContext)
+        public AuthRepository(AppDbContext dataContext)
         {
             _dataContext = dataContext;
         }

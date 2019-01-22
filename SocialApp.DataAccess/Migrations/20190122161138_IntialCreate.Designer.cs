@@ -9,9 +9,9 @@ using SocialApp.DataAccess;
 
 namespace SocialApp.DataAccess.Migrations
 {
-    [DbContext(typeof(SocialAppDbContext))]
-    [Migration("20190116155202_IdentityInit")]
-    partial class IdentityInit
+    [DbContext(typeof(AppDbContext))]
+    [Migration("20190122161138_IntialCreate")]
+    partial class IntialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -263,9 +263,7 @@ namespace SocialApp.DataAccess.Migrations
 
                     b.Property<int>("RoleId");
 
-                    b.HasKey("UserId");
-
-                    b.HasAlternateKey("UserId", "RoleId");
+                    b.HasKey("UserId", "RoleId");
 
                     b.HasIndex("RoleId");
 

@@ -5,7 +5,7 @@ using SocialApp.Domain;
 
 namespace SocialApp.DataAccess
 {
-    public class SocialAppDbContext : IdentityDbContext<
+    public class AppDbContext : IdentityDbContext<
         User,
         Role,
         int,
@@ -16,7 +16,7 @@ namespace SocialApp.DataAccess
         IdentityUserToken<int>
     >
     {
-        public SocialAppDbContext(DbContextOptions<SocialAppDbContext> options) : base (options) { }
+        public AppDbContext(DbContextOptions<AppDbContext> options) : base (options) { }
         
         public DbSet<Photo> Photos { get; set; }
         public DbSet<Like> Likes { get; set; }
@@ -27,7 +27,8 @@ namespace SocialApp.DataAccess
             base.OnModelCreating(builder);
             builder.Entity<UserRole>(userRole =>
             {
-                userRole.HasKey(ur => new {ur.UserId});
+                userRole.HasKey(ur => new { ur.UserId, ur.RoleId });
+
                 userRole.HasOne(ur => ur.Role)
                     .WithMany(r => r.UserRoles)
                     .HasForeignKey(ur => ur.RoleId)

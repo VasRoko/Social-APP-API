@@ -8,12 +8,12 @@ using SocialApp.Domain.Dtos;
 
 namespace SocialApp.Business
 {
-    public class SocialAppBusiness : ISocialAppBusiness
+    public class AppBusiness : IAppBusiness
     {
-        private readonly ISocialAppDataAccess _dataAccess;
+        private readonly IAppDataAccess _dataAccess;
         private readonly IMapper _mapper;
 
-        public SocialAppBusiness(ISocialAppDataAccess dataAccess, IMapper mapper)
+        public AppBusiness(IAppDataAccess dataAccess, IMapper mapper)
         {
             _dataAccess = dataAccess;
             _mapper = mapper;

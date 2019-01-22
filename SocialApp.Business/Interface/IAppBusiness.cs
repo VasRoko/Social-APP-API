@@ -6,7 +6,7 @@ using SocialApp.Domain.Dtos;
 
 namespace SocialApp.Business.Interface
 {
-    public interface ISocialAppBusiness
+    public interface IAppBusiness
     {
         IEnumerable<UserForListDto> MapUsers(int userid, PageList<User> users);
         Task<PageList<User>> GetUsers(UserParams userParams, int userId);

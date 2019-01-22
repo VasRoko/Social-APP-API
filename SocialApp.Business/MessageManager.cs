@@ -11,11 +11,11 @@ namespace SocialApp.Business
 {
     public class MessageManager : IMessageManager
     {
-        private readonly ISocialAppDataAccess _dataAccess;
-        private readonly ISocialAppBusiness _business;
+        private readonly IAppDataAccess _dataAccess;
+        private readonly IAppBusiness _business;
         private readonly IMapper _mapper;
 
-        public MessageManager(ISocialAppDataAccess dataAccess, ISocialAppBusiness business, IMapper mapper)
+        public MessageManager(IAppDataAccess dataAccess, IAppBusiness business, IMapper mapper)
         {
             _dataAccess = dataAccess;
             _mapper = mapper;

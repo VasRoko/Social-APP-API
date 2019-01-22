@@ -37,7 +37,7 @@ namespace SocialApp
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<SocialAppDbContext>(x => x.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"))
+            services.AddDbContext<AppDbContext>(x => x.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"))
                 .ConfigureWarnings(warnings => warnings.Ignore(CoreEventId.IncludeIgnoredWarning)));
 
             IdentityBuilder builder = services.AddIdentityCore<User>(opt =>
@@ -51,7 +51,7 @@ namespace SocialApp
             });
 
             builder = new IdentityBuilder(builder.UserType, typeof(Role), builder.Services);
-            builder.AddEntityFrameworkStores<SocialAppDbContext>();
+            builder.AddEntityFrameworkStores<AppDbContext>();
             builder.AddRoleValidator<RoleValidator<Role>>();
             builder.AddRoleManager<RoleManager<Role>>();
             builder.AddSignInManager<SignInManager<User>>();
@@ -72,11 +72,11 @@ namespace SocialApp
             services.Configure<CloudinarySettings>(Configuration.GetSection("CloudinarySettings"));
 
             services.AddAutoMapper();
-            // services.AddTransient<Seed>();
-            services.AddScoped<ISocialAppBusiness, SocialAppBusiness>();
-            services.AddScoped<ISocialAppDataAccess, SocialAppDataAccess>();
+            services.AddTransient<Seed>();
+            services.AddScoped<IAppBusiness, AppBusiness>();
+            services.AddScoped<IAppDataAccess, AppDataAccess>();
             services.AddScoped<IPhotoManager, PhotoManager>();
-            services.AddScoped<IUserManager, UserManager>();
+            services.AddScoped<IAuthManager, AuthManager>();
             services.AddScoped<IMessageManager, MessageManager>();
             services.AddScoped<LogUserActivity>();
 
@@ -92,10 +92,15 @@ namespace SocialApp
                     ValidateAudience = false
                 };
             });
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("RequiredAdminRole", policy => policy.RequireRole("Admin"));
+                options.AddPolicy("ModeratePhotoRole", policy => policy.RequireRole("Admin", "Moderator"));
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, Seed seeder)
         {
             if (env.IsDevelopment())
             {

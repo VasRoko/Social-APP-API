@@ -1,11 +1,9 @@
 ﻿using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
-using SocialApp.Business;
-using SocialApp.Domain;
+using SocialApp.Business.Interface;
 using SocialApp.Domain.Dtos;
 using SocialApp.Models;
 
@@ -17,15 +15,12 @@ namespace SocialApp.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly IUserManager _userManager;
+        private readonly IAuthManager _userManager;
         private readonly IConfiguration _config;
         private readonly IMapper _mapper;
 
-        private readonly UserManager<User> _userIdentityManager;
-        private readonly SignInManager<User> _signInManager;
-
         public AuthController(
-            IUserManager userManager,
+            IAuthManager userManager,
             IConfiguration config,
             IMapper mapper )
         {
