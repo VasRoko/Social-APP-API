@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using SocialApp.DataAccess.Interfaces;
+using SocialApp.DataAccess.Migrations;
 using SocialApp.Domain;
 
 namespace SocialApp.DataAccess
@@ -29,6 +30,11 @@ namespace SocialApp.DataAccess
         public async Task<bool> SaveAll()
         {
             return await _context.SaveChangesAsync() > 0;
+        }
+
+        public void DeletePhoto(Photo photo)
+        {
+            _context.Photos.Remove(photo);
         }
 
         public async Task<PageList<User>> GetUsers(UserParams userParams)
@@ -90,14 +96,20 @@ namespace SocialApp.DataAccess
             }
         }
 
-        public async Task<User> GetUser(int id)
+        public async Task<User> GetUser(int id, bool isCurrentUser )
         {
-            return await _context.Users.Include(p => p.Photos).FirstOrDefaultAsync(u => u.Id == id);
+            var query = _context.Users.Include(p => p.Photos).AsQueryable();
+            if (isCurrentUser)
+            {
+                query = query.IgnoreQueryFilters();
+            }
+            return await query.FirstOrDefaultAsync(u => u.Id == id);
+
         }
 
         public async Task<Photo> GetPhoto(int id)
         {
-            return await _context.Photos.FirstOrDefaultAsync(p => p.Id == id);
+            return await _context.Photos.IgnoreQueryFilters().FirstOrDefaultAsync(p => p.Id == id);
         }
 
         public async Task<Photo> GetMainPhoto(int userId)
@@ -155,5 +167,41 @@ namespace SocialApp.DataAccess
 
             return messages;
         }
+
+        public async Task<IEnumerable<object>> GetUsersWithRoles()
+        {
+            var users = await (from user in _context.Users
+                orderby user.UserName
+                select new
+                {
+                    user.Id,
+                    user.UserName,
+                    Roles = (from userRole in user.UserRoles
+                        join Role in _context.Roles
+                            on userRole.RoleId
+                            equals Role.Id
+                        select Role.Name).ToList()
+                }).ToListAsync();
+
+
+            return users;
+        }
+
+        public async Task<IEnumerable<object>> GetPhotosForModeration()
+        {
+            return await _context.Photos
+                .Include(u => u.User)
+                .IgnoreQueryFilters()
+                .Where(p => p.IsApproved == false)
+                .Select(u => new
+                {
+                    u.Id,
+                    u.User.UserName,
+                    u.Url,
+                    u.IsApproved
+                }).ToListAsync();
+        }
+
+
     }
 }

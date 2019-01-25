@@ -39,7 +39,7 @@ namespace SocialApp.Business
         public async Task<PhotoForReturnDto> AddPhotoUser(int userId, PhotoForCreationDto photoForCreationDto)
         {
 
-            var user = await _dataContext.GetUser(userId);
+            var user = await _dataContext.GetUser(userId, true);
             var uploadResult = new ImageUploadResult();
             var file = photoForCreationDto.File;
 
@@ -85,7 +85,7 @@ namespace SocialApp.Business
 
         public async Task<string> SetMainPhoto(int userId, int photoId)
         {
-            var user = await _dataContext.GetUser(userId);
+            var user = await _dataContext.GetUser(userId, true);
 
             if(!user.Photos.Any(p => p.Id == photoId))
             {
@@ -113,7 +113,7 @@ namespace SocialApp.Business
 
         public async Task<string> DeletePhoto(int usedId, int id)
         {
-            var user = await _dataContext.GetUser(usedId);
+            var user = await _dataContext.GetUser(usedId, true);
             var photo = await _dataContext.GetPhoto(id);
 
             if (!user.Photos.Any(p => p.Id == id))

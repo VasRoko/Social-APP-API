@@ -15,7 +15,7 @@ namespace SocialApp.Business.Helpers
             var userId = int.Parse(resultContext.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
             var dbContext = resultContext.HttpContext.RequestServices.GetService<IAppDataAccess>();
 
-            var user = await dbContext.GetUser(userId);
+            var user = await dbContext.GetUser(userId, true);
             user.LastActive = DateTime.Now;
             await dbContext.SaveAll();
         }

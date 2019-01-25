@@ -21,7 +21,7 @@ namespace SocialApp.Business
 
         public async Task<PageList<User>> GetUsers(UserParams userParams, int userId)
         {
-            var currentUser = await _dataAccess.GetUser(userId);
+            var currentUser = await _dataAccess.GetUser(userId, true);
             userParams.UserId = currentUser.Id;
             var users = await _dataAccess.GetUsers(userParams);
             if (string.IsNullOrEmpty(userParams.Gender))
@@ -54,7 +54,8 @@ namespace SocialApp.Business
 
         public async Task<UserForDetailedDto> GetUser(int currentUserid, int id)
         {
-            var user = await _dataAccess.GetUser(id);
+            var isCurrentUser = currentUserid == id;
+            var user = await _dataAccess.GetUser(id, isCurrentUser);
             var userToReturn = _mapper.Map<UserForDetailedDto>(user);
             if(await _dataAccess.GetLike(currentUserid, user.Id) != null)
             {
@@ -65,7 +66,7 @@ namespace SocialApp.Business
 
         public async Task<UserForUpdateDto> UpdateUser(int id, UserForUpdateDto userForUpdateDto)
         {
-            var userFromContext = await _dataAccess.GetUser(id);
+            var userFromContext = await _dataAccess.GetUser(id, true);
             _mapper.Map(userForUpdateDto, userFromContext);
 
             if (await _dataAccess.SaveAll())
@@ -89,7 +90,7 @@ namespace SocialApp.Business
                 }
             }
 
-            if (await _dataAccess.GetUser(recipientId) == null)
+            if (await _dataAccess.GetUser(recipientId, false) == null)
             {
                 return null;
             }

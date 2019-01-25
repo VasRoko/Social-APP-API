@@ -78,6 +78,8 @@ namespace SocialApp
             services.AddScoped<IPhotoManager, PhotoManager>();
             services.AddScoped<IAuthManager, AuthManager>();
             services.AddScoped<IMessageManager, MessageManager>();
+            services.AddScoped<IAdminManager, AdminManager>();
+
             services.AddScoped<LogUserActivity>();
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
@@ -127,7 +129,7 @@ namespace SocialApp
             }
 
             // app.UseHttpsRedirection();
-            // seeder.SeedUsers();
+            seeder.SeedUsers();
             app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
             app.UseAuthentication();
             app.UseDefaultFiles();
