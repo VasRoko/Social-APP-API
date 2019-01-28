@@ -39,9 +39,10 @@ namespace SocialApp.DataAccess
 
         public async Task<PageList<User>> GetUsers(UserParams userParams)
         {
-            var users = _context.Users.Include(p => p.Photos).OrderByDescending(u => u.LastActive).AsQueryable();
-            users = users.Where(u => u.Id != userParams.UserId);
-            users = users.Where(u => u.Gender == userParams.Gender);
+            var users = _context.Users
+                .Where(u => u.Id != userParams.UserId)
+                .Where(u => u.Gender == userParams.Gender)
+                .Include(p => p.Photos).OrderByDescending(u => u.LastActive).AsQueryable();
 
             if (userParams.Likers)
             {
