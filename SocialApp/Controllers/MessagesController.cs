@@ -1,12 +1,13 @@
 ﻿using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.AspNetCore.Mvc;
 using SocialApp.Business.Helpers;
 using SocialApp.Business.Interface;
 using SocialApp.Domain;
 using SocialApp.Domain.Dtos;
 using SocialApp.Helpers;
+
 
 namespace SocialApp.Controllers
 {
@@ -66,6 +67,8 @@ namespace SocialApp.Controllers
             }
 
             var message = await _messageManager.GetMessageThred(userId, recipientId);
+
+            
             return Ok(message);
         }
 

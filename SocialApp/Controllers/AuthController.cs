@@ -32,14 +32,14 @@ namespace SocialApp.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register(UserRegister userRegister)
         {
-            var createdUser = await _userManager.Register(_mapper.Map<UserForRegisterDto>(userRegister), userRegister.Password);
+            var response = await _userManager.Register(_mapper.Map<UserForRegisterDto>(userRegister), userRegister.Password);
 
-            if (createdUser == null)
+            if (!response.isValid)
             {
-                return BadRequest("Username already exist!");
+                return BadRequest(response.Message);
             }
 
-            return CreatedAtRoute("GetUser", new { controller = "Users", id = createdUser.Id }, createdUser);
+            return CreatedAtRoute("GetUser", new { controller = "Users", id = response.Data }, response.Data);
         }
 
         [HttpPost("login")]

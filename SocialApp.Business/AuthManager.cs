@@ -36,18 +36,24 @@ namespace SocialApp.Business
             _signInManager = signInManager;
         }
 
-        public async Task<UserForDetailedDto> Register(UserForRegisterDto userRegister, string password)
+        public async Task<Result> Register(UserForRegisterDto userRegister, string password)
         {
+            Result result = new Result();
             var newUser = _mapper.Map<User>(userRegister);
-            var result = await _userIdentityManager.CreateAsync(newUser, userRegister.Password);
+            var res = await _userIdentityManager.CreateAsync(newUser, userRegister.Password);
 
-            if (result.Succeeded)
+
+            if (res.Succeeded)
             {
-                // Return user for userForList
-                return _mapper.Map<UserForDetailedDto>(newUser);
+                result.isValid = true;
+                result.Data = _mapper.Map<UserForRegisterDto>(newUser);
+            }
+            else
+            {
+                result.Message = res.ToString();
             }
 
-            return null;
+            return result;
         }
 
         public async Task<object> Login(string username, string password)

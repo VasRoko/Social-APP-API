@@ -22,6 +22,7 @@ using SocialApp.DataAccess.Interfaces;
 using SocialApp.Helpers;
 using SocialApp.Domain;
 using SocialApp.Business.Helpers;
+using SocialApp.Hubs;
 
 namespace SocialApp
 {
@@ -94,11 +95,13 @@ namespace SocialApp
                     ValidateAudience = false
                 };
             });
+
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("RequiredAdminRole", policy => policy.RequireRole("Admin"));
                 options.AddPolicy("ModeratePhotoRole", policy => policy.RequireRole("Admin", "Moderator"));
             });
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

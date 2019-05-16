@@ -52,16 +52,11 @@ namespace SocialApp.Controllers
                 return Unauthorized();
             }
 
-            string res = await _photoManager.SetMainPhoto(userId, id);
+            var result = await _photoManager.SetMainPhoto(userId, id);
 
-            if (res == null)
+            if (!result.isValid)
             {
-                return BadRequest("Could not set photo to main");
-            }
-
-            if (res == "This is already the main photo")
-            {
-                return BadRequest(res);
+                return BadRequest(result.Message);
             }
 
             return NoContent();
@@ -75,19 +70,14 @@ namespace SocialApp.Controllers
                 return Unauthorized();
             }
 
-            string res = await _photoManager.DeletePhoto(userId, id);
+            var result = await _photoManager.DeletePhoto(userId, id);
 
-            if (res == "You cannot delete your main photo")
+            if (!result.isValid)
             {
-                return BadRequest(res);
+                return BadRequest(result.Message);
             }
 
-            if (res != null)
-            {
-                return Ok();
-            }
-
-            return BadRequest("Failed to delete Photo");
+            return Ok();
         }
 
 

@@ -44,6 +44,7 @@ namespace SocialApp.Business
             var userRoles = await _userManager.GetRolesAsync(user);
 
             var selectedRoles = roles.RoleNames;
+
             selectedRoles = selectedRoles ?? new string[] {};
 
             var result = await _userManager.AddToRolesAsync(user, selectedRoles.Except(userRoles));
@@ -53,6 +54,7 @@ namespace SocialApp.Business
             }
 
             result = await _userManager.RemoveFromRolesAsync(user, userRoles.Except(selectedRoles));
+
             if (!result.Succeeded)
             {
                 return null;

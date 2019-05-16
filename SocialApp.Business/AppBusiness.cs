@@ -23,7 +23,9 @@ namespace SocialApp.Business
         {
             var currentUser = await _dataAccess.GetUser(userId, true);
             userParams.UserId = currentUser.Id;
+
             var users = await _dataAccess.GetUsers(userParams);
+
             if (string.IsNullOrEmpty(userParams.Gender))
             {
                 userParams.Gender = currentUser.Gender == "male" ? "female" : "male";

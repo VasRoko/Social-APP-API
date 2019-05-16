@@ -6,7 +6,7 @@ namespace SocialApp.Business.Interface
 {
     public interface IAuthManager
     {
-        Task<UserForDetailedDto> Register(UserForRegisterDto userForRegister, string password);
+        Task<Result> Register(UserForRegisterDto userForRegister, string password);
         Task<object> Login(string username, string password);
         Task<object> TokenIssuer(User currentUser);
     }

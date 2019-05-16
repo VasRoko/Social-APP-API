@@ -16,6 +16,7 @@ namespace SocialApp.Controllers
         {
             _adminManager = adminManager;
         }
+
         [Authorize(Policy = "RequiredAdminRole")]
         [HttpGet("usersWithRoles")]
         public IActionResult GetUsersWithRoles()

@@ -20,6 +20,7 @@ namespace SocialApp.Business
         private readonly IOptions<CloudinarySettings> _cloudinaryConfig;
         private readonly IMapper _mapper;
         private Cloudinary _cloudinary;
+        private Result _result;
 
         public PhotoManager(IAppDataAccess dataContext, IOptions<CloudinarySettings> cloudinaryConfig, IMapper mapper)
         {
@@ -34,6 +35,7 @@ namespace SocialApp.Business
             );
 
             _cloudinary = new Cloudinary(acc);
+            _result = new Result();
         }
 
         public async Task<PhotoForReturnDto> AddPhotoUser(int userId, PhotoForCreationDto photoForCreationDto)
@@ -83,20 +85,21 @@ namespace SocialApp.Business
             return _mapper.Map<PhotoForReturnDto>(photo);
         }
 
-        public async Task<string> SetMainPhoto(int userId, int photoId)
+        public async Task<Result> SetMainPhoto(int userId, int photoId)
         {
             var user = await _dataContext.GetUser(userId, true);
+            Result result = new Result();
 
             if(!user.Photos.Any(p => p.Id == photoId))
             {
-                return null;
+                result.Data = null;
             }
 
             var photoFromDb = await _dataContext.GetPhoto(photoId);
 
             if (photoFromDb.IsMain)
             {
-                return "This is already the main photo";
+                result.Message = "This is already the main photo";
             }
 
             var currentMainPhoto = await _dataContext.GetMainPhoto(userId);
@@ -105,33 +108,34 @@ namespace SocialApp.Business
 
             if (await _dataContext.SaveAll())
             {
-                return "ok";
+                result.isValid = true;
             }
 
-            return null;
+            return result;
         }
 
-        public async Task<string> DeletePhoto(int usedId, int id)
+        public async Task<Result> DeletePhoto(int usedId, int id)
         {
+            Result result = new Result();
             var user = await _dataContext.GetUser(usedId, true);
             var photo = await _dataContext.GetPhoto(id);
 
             if (!user.Photos.Any(p => p.Id == id))
             {
-                return null;
+                result.Data = null;
             }
 
             if (photo.IsMain)
             {
-                return "You cannot delete your main photo";
+                result.Message = "You cannot delete your main photo";
             }
 
             if (photo.PublicId != null)
             {
                 var deleteParams = new DeletionParams(photo.PublicId);
-                var result = _cloudinary.Destroy(deleteParams);
+                var cloudinaryResponse = _cloudinary.Destroy(deleteParams);
 
-                if (result.Result == "ok")
+                if (cloudinaryResponse.Result == "ok")
                 {
                     _dataContext.Delete(photo);
                 }
@@ -144,10 +148,10 @@ namespace SocialApp.Business
             
             if (await _dataContext.SaveAll())
             {
-                return "ok";
+                _result.isValid = true;
             }
 
-            return null;
+            return result;
         }
     }
 }

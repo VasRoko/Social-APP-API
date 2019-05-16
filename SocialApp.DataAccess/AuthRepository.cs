@@ -49,11 +49,6 @@ namespace SocialApp.DataAccess
                return null;
             }
 
-           // if (!VerifyPassword(password, user.PasswordHash, user.PasswordSalt))
-           // {
-               //  return null;
-           // }
-
             return user;
         }
 
